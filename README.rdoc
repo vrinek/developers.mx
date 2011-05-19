@@ -1,5 +1,17 @@
+= Designer.MX CLI client/player
+
+This depends heavily on OSX, will not run on anything else as it is.
+
+== Usage
+
 Download a list of albums to choose from with:
   ./listen.rb
 
 Alternative usage:
   ./listen.rb album_name
+
+== Features
+
+* wget downloads mp3s
+* afplay plays music
+* growl informs you of whats happening
