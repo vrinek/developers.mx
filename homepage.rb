@@ -1,3 +1,6 @@
+albums = {:downloaded => `ls '#{BASE_DIR}'`.split("\n")}
+
+puts "fetching album list from homepage..."
 homepage = open("http://designers.mx/").read
 
 cover_album_div = homepage[%r[<div id\="home-album">\s*(\s*<div>\s*<a href="[^"]+">.*?</a>\s*</div>\s*)+</div>]m]
