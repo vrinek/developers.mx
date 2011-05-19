@@ -1,8 +1,8 @@
 def growl_track(action, mix, track)
   options = {
     :name => 'Designer.MX CLI ruby script',
-    :message => "#{action} \"#{track}\" from mix \"#{mix}\"",
-    :title => "Designer.MX"
+    :message => "#{mix}\n#{track}",
+    :title => "Designer.MX - #{action}"
   }
   growl options
 end

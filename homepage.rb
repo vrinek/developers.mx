@@ -17,4 +17,4 @@ puts albums[:top].map{|a| "\t#{a}"}
 puts "\n10 most recent albums:"
 puts albums[:recent].map{|a| "\t#{a}"}
 puts "\n10 most popular albums:"
-puts albums[:recent].map{|a| "\t#{a}"}
+puts albums[:popular].map{|a| "\t#{a}"}

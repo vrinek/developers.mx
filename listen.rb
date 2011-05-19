@@ -24,7 +24,7 @@ playlist = html[%r[Playlist\("\d+", \[([^\]]+)\]]m, 1]
 mp3s = playlist.scan(/\{\s*name\:\s*"([^"]+)",\s*htmlname\:\s*"([^"]+)",\s*mp3:\s*"([^"]+)"\s*\}/m)
 mp3s.map! do |name, html, url|
   num = html[/^\d+/]
-  filename = "#{BASE_DIR}#{album}/#{num.to_s.rjust(2, '0')}. #{name.gsub(/\//, "-").gsub(/[\!\'"]/, "-")}.mp3"
+  filename = "#{BASE_DIR}#{album}/#{num.to_s.rjust(2, '0')}. #{name.gsub(/\//, "-").gsub(/[\!\'"\$]/, "-")}.mp3"
   
   {
     :name => name,
@@ -49,7 +49,7 @@ downloader = Thread.new do
         puts k.to_s.rjust(12) + " : " + v.to_s
       end
       puts "\n"
-      growl_track("Downloading", album, mp3[:name])
+      growl_track("downloading", album, mp3[:name])
 
       sh "wget -nv \"#{mp3[:url]}\" -O \"#{mp3[:filename]}\""
       raise "MP3 was not downloaded" unless File.exists?(mp3[:filename])
@@ -68,7 +68,7 @@ player = Thread.new do
     until @played
       if File.exists?(mp3[:filename])
         puts "PLAYING - #{mp3[:num]}. #{mp3[:name]}"
-        growl_track("Playing", album, mp3[:name])
+        growl_track("playing", album, mp3[:name])
         
         sh "afplay '#{mp3[:filename]}'"
         @played = true
