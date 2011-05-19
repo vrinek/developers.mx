@@ -1,0 +1,5 @@
+Download a list of albums to choose from with:
+  ./listen.rb
+
+Alternative usage:
+  ./listen.rb album_name
