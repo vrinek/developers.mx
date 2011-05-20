@@ -83,7 +83,7 @@ player = Thread.new do
         puts "PLAYING - #{mp3[:num]}. #{mp3[:name]}"
         growl_track("playing", album, mp3[:name])
         
-        sh "afplay '#{mp3[:filename]}'"
+        sh "afplay -v 0.4 '#{mp3[:filename]}'"
         @played = true
       else
         debug "Can't find #{mp3[:name]} yet, sleeping..."
