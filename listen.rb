@@ -32,6 +32,8 @@ end
 album_url = "http://designers.mx/#{album}/"
 html = open(album_url).read
 
+album_name = html[/<title>(.*?)( \- Designers\.MX)?<\/title>/, 1]
+
 playlist = html[%r[Playlist\("\d+", \[([^\]]+)\]]m, 1]
 mp3s = playlist.scan(/\{\s*name\:\s*"([^"]+)",\s*htmlname\:\s*"([^"]+)",\s*mp3:\s*"([^"]+)"\s*\}/m)
 mp3s.map! do |name, html, url|
@@ -60,8 +62,8 @@ downloader = Thread.new do
       mp3.each do |k,v|
         debug k.to_s.rjust(12) + " : " + v.to_s
       end
-      growl_track("downloading", album, mp3[:name])
       debug "\n"
+      growl_track("downloading", album_name, mp3[:name])
       puts "DOWNLOADING - #{mp3[:name]}"
 
       sh "wget -q \"#{mp3[:url]}\" -O \"#{mp3[:filename]}\""
@@ -81,7 +83,7 @@ player = Thread.new do
     until @played
       if File.exists?(mp3[:filename])
         puts "PLAYING - #{mp3[:num]}. #{mp3[:name]}"
-        growl_track("playing", album, mp3[:name])
+        growl_track("playing", album_name, mp3[:name])
         
         sh "afplay -v 0.4 '#{mp3[:filename]}'"
         @played = true
