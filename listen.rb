@@ -2,8 +2,10 @@
 
 require 'open-uri'
 require 'growl.rb'
+
 BASE_DIR = "#{`echo ~`.strip}/Desktop/Designer.MX/"
 DEBUG = false
+VOLUME = 0.4
 
 def sh(command)
   debug command
@@ -85,7 +87,7 @@ player = Thread.new do
         puts "PLAYING - #{mp3[:num]}. #{mp3[:name]}"
         growl_track("playing", album_name, mp3[:name])
         
-        sh "afplay -v 0.4 '#{mp3[:filename]}'"
+        sh "afplay -v #{VOLUME} '#{mp3[:filename]}'"
         @played = true
       else
         debug "Can't find #{mp3[:name]} yet, sleeping..."
