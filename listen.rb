@@ -3,9 +3,10 @@
 require 'open-uri'
 require 'growl.rb'
 BASE_DIR = "#{`echo ~`.strip}/Desktop/Designer.MX/"
+DEBUG = false
 
 def sh(command)
-  puts command
+  debug command
   system command
 end
 
@@ -22,6 +23,10 @@ def puts(string)
   @puts_mutex.synchronize do
     super(string.to_s)
   end
+end
+
+def debug(string)
+  puts string if DEBUG
 end
 
 album_url = "http://designers.mx/#{album}/"
@@ -53,10 +58,11 @@ downloader = Thread.new do
   mp3s.each do |mp3|
     unless File.exists?(mp3[:filename])
       mp3.each do |k,v|
-        puts k.to_s.rjust(12) + " : " + v.to_s
+        debug k.to_s.rjust(12) + " : " + v.to_s
       end
-      puts "\n"
       growl_track("downloading", album, mp3[:name])
+      debug "\n"
+      puts "DOWNLOADING - #{mp3[:name]}"
 
       sh "wget -nv \"#{mp3[:url]}\" -O \"#{mp3[:filename]}\""
       raise "MP3 was not downloaded" unless File.exists?(mp3[:filename])
@@ -80,7 +86,7 @@ player = Thread.new do
         sh "afplay '#{mp3[:filename]}'"
         @played = true
       else
-        puts "Can't find #{mp3[:name]} yet, sleeping..."
+        debug "Can't find #{mp3[:name]} yet, sleeping..."
         sleep 5
       end
     end
