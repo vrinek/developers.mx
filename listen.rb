@@ -17,6 +17,13 @@ else
   album = ARGV[0].strip
 end
 
+@puts_mutex = Mutex.new
+def puts(string)
+  @puts_mutex.synchronize do
+    super(string.to_s)
+  end
+end
+
 album_url = "http://designers.mx/#{album}/"
 html = open(album_url).read
 
