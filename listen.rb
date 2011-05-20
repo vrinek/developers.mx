@@ -64,7 +64,7 @@ downloader = Thread.new do
       debug "\n"
       puts "DOWNLOADING - #{mp3[:name]}"
 
-      sh "wget -nv \"#{mp3[:url]}\" -O \"#{mp3[:filename]}\""
+      sh "wget -q \"#{mp3[:url]}\" -O \"#{mp3[:filename]}\""
       raise "MP3 was not downloaded" unless File.exists?(mp3[:filename])
     end
   end
