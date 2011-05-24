@@ -1,4 +1,4 @@
-albums = {:downloaded => `ls '#{BASE_DIR}'`.split("\n")}
+albums = {:downloaded => `ls '#{@opts[:dir]}'`.split("\n")}
 
 puts "fetching album list from homepage..."
 homepage = open("http://designers.mx/").read
@@ -10,9 +10,12 @@ more_albums = homepage.scan(%r[<li class="(one|two|three|four|last)"><a href="/(
 albums[:recent] = more_albums[0,10]
 albums[:popular] = more_albums[10,10]
 
-puts "\nDownloaded albums:"
-puts albums[:downloaded].map{|a| "\t#{a}"}
-puts "\n5 TOP albums:"
+unless albums[:downloaded].empty?
+  puts "\nDownloaded albums:"
+  puts albums[:downloaded].map{|a| "\t#{a}"}
+end
+
+puts "\n5 random albums:"
 puts albums[:top].map{|a| "\t#{a}"}
 puts "\n10 most recent albums:"
 puts albums[:recent].map{|a| "\t#{a}"}

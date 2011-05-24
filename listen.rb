@@ -1,46 +1,49 @@
 #!/usr/bin/env ruby
 
 require 'open-uri'
-require 'growl.rb'
+require 'fileutils'
+require 'lib/growl.rb'
+require 'lib/options.rb'
 
-BASE_DIR = "#{`echo ~`.strip}/Desktop/Designer.MX/"
-DEBUG = false
-VOLUME = 0.4
+p @opts if @opts[:debug]
+FileUtils.makedirs(@opts[:dir])
 
-def sh(command)
+def system(command)
   debug command
-  system command
-end
-
-unless ARGV[0]
-  require 'homepage.rb'
-  puts "\nPlease enter the name of the album you want to listen to:"
-  album = gets.strip
-else
-  album = ARGV[0].strip
+  super command
 end
 
 @puts_mutex = Mutex.new
 def puts(string)
   @puts_mutex.synchronize do
-    super(string.to_s)
+    super(string)
   end
 end
 
 def debug(string)
-  puts string if DEBUG
+  puts string if @opts[:debug]
+end
+
+unless ARGV[0]
+  require 'lib/homepage.rb'
+
+  puts "\nPlease enter the name of the album you want to listen to:"
+  album = gets.strip
+else
+  album = ARGV[0].strip
+  puts "Album: #{album}"
 end
 
 album_url = "http://designers.mx/#{album}/"
-html = open(album_url).read
+album_html = open(album_url).read
 
-album_name = html[/<title>(.*?)( \- Designers\.MX)?<\/title>/, 1]
+@album_name = album_html[/<title>(.*?)( \- Designers\.MX)?<\/title>/, 1]
+playlist = album_html[%r[Playlist\("\d+", \[([^\]]+)\]]m, 1]
 
-playlist = html[%r[Playlist\("\d+", \[([^\]]+)\]]m, 1]
-mp3s = playlist.scan(/\{\s*name\:\s*"([^"]+)",\s*htmlname\:\s*"([^"]+)",\s*mp3:\s*"([^"]+)"\s*\}/m)
-mp3s.map! do |name, html, url|
+@mp3s = playlist.scan(/\{\s*name\:\s*"([^"]+)",\s*htmlname\:\s*"([^"]+)",\s*mp3:\s*"([^"]+)"\s*\}/m)
+@mp3s.map! do |name, html, url|
   num = html[/^\d+/]
-  filename = "#{BASE_DIR}#{album}/#{num.to_s.rjust(2, '0')}. #{name.gsub(/\//, "-").gsub(/[\!\'"\$]/, "-")}.mp3"
+  filename = "#{@opts[:dir]}#{album}/#{num.to_s.rjust(2, '0')}. #{name.gsub(/\//, "-").gsub(/[\!\'"\$]/, "-")}.mp3"
   
   {
     :name => name,
@@ -51,51 +54,22 @@ mp3s.map! do |name, html, url|
   }
 end
 
-if mp3s.empty?
-  sh "open #{album_url}"
-  raise "No mp3s found..."
-end
-
-FileUtils.makedirs(mp3s[0][:filename].sub(/\/[^\/]+\.mp3$/, '/'))
-
-downloader = Thread.new do
-  mp3s.each do |mp3|
-    unless File.exists?(mp3[:filename])
-      mp3.each do |k,v|
-        debug k.to_s.rjust(12) + " : " + v.to_s
-      end
-      debug "\n"
-      growl_track("downloading", album_name, mp3[:name])
-      puts "DOWNLOADING - #{mp3[:name]}"
-
-      sh "wget -q \"#{mp3[:url]}\" -O \"#{mp3[:filename]}\""
-      raise "MP3 was not downloaded" unless File.exists?(mp3[:filename])
+if @opts[:debug]
+  @mp3s.each do |mp3|
+    mp3.each do |k, v|
+      puts k.to_s.rjust(10) + ' : ' + v.to_s
     end
-  end
-  
-  puts "Done downloading :)"
-end
-
-player = Thread.new do
-  sleep 5
-  
-  mp3s.each do |mp3|
-    @played = false
-
-    until @played
-      if File.exists?(mp3[:filename])
-        puts "PLAYING - #{mp3[:num]}. #{mp3[:name]}"
-        growl_track("playing", album_name, mp3[:name])
-        
-        sh "afplay -v #{VOLUME} '#{mp3[:filename]}'"
-        @played = true
-      else
-        debug "Can't find #{mp3[:name]} yet, sleeping..."
-        sleep 5
-      end
-    end
+    puts "status".rjust(10) + " : #{File.exists?(mp3[:filename]) ? 'LOCAL' : 'REMOTE'}"
+    puts "\n"
   end
 end
 
-downloader.join
-player.join
+raise "No mp3s found..." if @mp3s.empty?
+
+FileUtils.makedirs(@mp3s[0][:filename].sub(/\/[^\/]+\.mp3$/, '/'))
+
+require 'lib/downloader.rb' unless @opts[:'no-download']
+require 'lib/player.rb' unless @opts[:'no-play']
+
+@downloader.join if @downloader
+@player.join if @player
