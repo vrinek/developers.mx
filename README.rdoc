@@ -1,6 +1,20 @@
-= Designer.MX CLI client/player
+= Designers.MX CLI downloader/player
 
-This depends heavily on OSX, will not run on anything else as it is.
+[version] 0.2
+
+Right now it depends on OSX, will not run on anything else as it is.
+
+=== What it does
+* Fetches the album names on the front page of http://designers.mx
+* Asks you to pick one
+* Downloads it and plays it
+
+=== What it doesn't do (yet)
+* Won't display the actual album names (only the path)
+* Won't let you pause/play and skip songs (ctrl-C to do that)
+* Might leave the music playing after you interrupt the script (use <tt>killall afplay</tt> to stop the music)
+* Won't import anything in iTunes
+* Won't create a playlist (.m3u file)
 
 == Usage
 
@@ -10,15 +24,32 @@ Simplest usage (it will download a list of albums and ask which one to play):
 Download and play a specific album:
   ./listen.rb album_name
 
-More options:
-  ./listen.rb --help # displays all the available options
-  ./listen.rb --volume 20 # sets the volume to 20%
-  ./listen.rb --dir ~/Music/Designer.MX # sets the base directory where all mp3s are going to be downloaded
-  ./listen.rb --no-play # download music but don't play
-  ./listen.rb --no-download # play music but don't download (only useful on downloaded albums)
+=== More options:
 
-== Features
+Displays all the available options and defaults:
+  ./listen.rb --help
+  
+Sets the volume to 20%:
+  ./listen.rb --volume 20
 
-* wget downloads mp3s
-* afplay plays music
-* growl informs you of whats happening
+Sets the base directory where all mp3s are going to be downloaded:
+  ./listen.rb --dir ~/Music/Designer.MX
+
+Download music but don't play:
+  ./listen.rb --no-play
+
+Play music but don't download (only useful on downloaded albums):
+  ./listen.rb --no-download
+
+== Command-line dependencies
+
+[wget]
+    To download the mp3s. I am not sure but I guess this is installed by default.
+[afplay]
+    To plays music. This is installed by default on OSX.
+[growlnotify (optional)]
+    To inform you of what's happening. You will find it in the .dmg of Growl (http://growl.info)
+
+== Contact info
+
+The project is hosted on https://github.com/vrinek/developers.mx. Bug reports, feature requests and other feedback should be directed there.

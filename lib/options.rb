@@ -10,9 +10,11 @@ EOS
 
   opt :volume, "Music volume", :default => 40
   opt :debug, "Debug mode"
-  opt :dir, "Base directory", :default => "#{`echo ~`.strip}/Desktop/Designer.MX/"
+  opt :dir, "Base directory", :default => "~/Desktop/Designer.MX/"
   opt :"no-play", "Don't play, only download", :default => false
   opt :"no-download", "Don't download, only play", :default => false
 end
 
 Trollop::die :volume, "must be non-negative" if @opts[:volume] < 0
+
+@opts[:dir].sub!(/^\~/, `echo ~`.strip)
