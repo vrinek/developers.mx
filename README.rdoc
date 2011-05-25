@@ -4,11 +4,18 @@ This depends heavily on OSX, will not run on anything else as it is.
 
 == Usage
 
-Download a list of albums to choose from with:
+Simplest usage (it will download a list of albums and ask which one to play):
   ./listen.rb
 
-Alternative usage:
+Download and play a specific album:
   ./listen.rb album_name
+
+More options:
+  ./listen.rb --help # displays all the available options
+  ./listen.rb --volume 20 # sets the volume to 20%
+  ./listen.rb --dir ~/Music/Designer.MX # sets the base directory where all mp3s are going to be downloaded
+  ./listen.rb --no-play # download music but don't play
+  ./listen.rb --no-download # play music but don't download (only useful on downloaded albums)
 
 == Features
 
