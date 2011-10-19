@@ -1,4 +1,4 @@
-require 'trollop.rb'
+require 'lib/trollop.rb'
 
 @opts = Trollop::options do
   version "developers.mx 0.2 (c) 2011 Kostas Karachalios"

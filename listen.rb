@@ -2,6 +2,7 @@
 
 require 'open-uri'
 require 'fileutils'
+require 'thread'
 require 'lib/growl.rb'
 require 'lib/options.rb'
 
